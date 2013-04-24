@@ -24,8 +24,8 @@ public class Cuckoo {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		BigInteger b = new BigInteger("500");
-		BigInteger c = new BigInteger("503");
+		BigInteger b = new BigInteger("5000");
+		BigInteger c = new BigInteger("50000000");
 		
 		ArrayList<BigInteger> list = new ArrayList<BigInteger>();
 		list.add(b);
