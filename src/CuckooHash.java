@@ -1,5 +1,7 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
 
 
 public class CuckooHash {
@@ -15,24 +17,58 @@ public class CuckooHash {
 	int p=0; //p= prime >m
 	
 	int a1=0,a2=0,b1=0,b2=0;//all primes b/w 0 and p-1
+	int indexA1 = 0;
+	
+	ArrayList<BigInteger> array = new ArrayList<BigInteger>();
+	
+	Random generator = new Random(23);
 	
 	/**
 	 * @param args
 	 */
 	
 	//Constructor
-	CuckooHash(int n)
+	public CuckooHash(int inputN)
 	{
-		m=2*n; //n=nos to be hashed, m= no. of buckets
-		//or 4n or 6n?		
+		n = inputN;
+		m=2*n; 	//n=nos to be hashed, m= no. of buckets
+				//or 4n or 6n?
+		
+		BigInteger pTemp = new BigInteger(String.valueOf(m));
+		pTemp = pTemp.nextProbablePrime();
+		p = pTemp.intValue();
+		
+		
+		BigInteger d = new BigInteger("0");
+				
+		while(d.compareTo(pTemp) == -1)
+		{
+			array.add(d);
+			d = d.nextProbablePrime();			
+		}
 	}
 	
 	public void Hash()
 	{
 		/**
-		 rand p //such that p>m
 		 rand a1,b1,a2,b2; //all between 0 and p-1
 		 */
+		
+		int length = array.size();
+		int num = generator.nextInt(length);
+		
+		a1 = array.get(num).intValue();
+		
+		num = generator.nextInt(length);
+		a2 = array.get(num).intValue();
+		
+		num = generator.nextInt(length);
+		b1 = array.get(num).intValue();
+		
+		num = generator.nextInt(length);
+		b2 = array.get(num).intValue();
+		
+		
 	}
 	
 	public int Lookup(int x)
