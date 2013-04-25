@@ -1,31 +1,22 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 
 public class CuckooHash {
-	//ArrayList<BigInteger> T = new ArrayList<BigInteger>();
-	
-	//BigInteger a1=new BigInteger("0");
-	//BigInteger a2=new BigInteger("0");
-	//BigInteger b1=new BigInteger("0");
-	//BigInteger b2=new BigInteger("0");
-	
+		
 	int n=0,m=0;
 	
 	int p=0; //p= prime >m
 	
 	int a1=0,a2=0,b1=0,b2=0;//all primes b/w 0 and p-1
-	int indexA1 = 0;
 	
 	ArrayList<BigInteger> array = new ArrayList<BigInteger>();
 	
 	Random generator = new Random(23);
 	
-	/**
-	 * @param args
-	 */
+	int[] T;
+	int Z=0;  //Z is size of actual elements of T
 	
 	//Constructor
 	public CuckooHash(int inputN)
@@ -33,6 +24,8 @@ public class CuckooHash {
 		n = inputN;
 		m=2*n; 	//n=nos to be hashed, m= no. of buckets
 				//or 4n or 6n?
+		
+		T = new int[m];
 		
 		BigInteger pTemp = new BigInteger(String.valueOf(m));
 		pTemp = pTemp.nextProbablePrime();
@@ -53,49 +46,72 @@ public class CuckooHash {
 		/**
 		 rand a1,b1,a2,b2; //all between 0 and p-1
 		 */
-		
 		int length = array.size();
-		int num = generator.nextInt(length);
 		
+		int num = generator.nextInt(length);
 		a1 = array.get(num).intValue();
 		
+		int temp = num;
+		
+		while(temp == num)
+		{
 		num = generator.nextInt(length);
+		}
 		a2 = array.get(num).intValue();
 		
+		int temp2 = num;
+		
+		while(temp2 == num || temp == num)
+		{
 		num = generator.nextInt(length);
+		}
 		b1 = array.get(num).intValue();
 		
+		int temp3 = num;
+		
+		while(temp3 == num || temp2 == num || temp == num)
+		{
 		num = generator.nextInt(length);
+		}
 		b2 = array.get(num).intValue();
-		
-		
 	}
 	
 	public int Lookup(int x)
 	{
-		//if(T[h1(x)]==x || T[h2(x)]==x)
+		if(T[h1(x)] == x || T[h2(x)] == x)
 			return 0;
-		//else
-			//return 1;
+		else
+			return 1;
 	}
 
-	public void Swap(int x, int pos)
+	public int Swap(int x, int pos)
 	{
-		int y=x;
-		//x=T[pos];
-		//T[pos]=y;
+		int temp=x;
+		x=T[pos];
+		T[pos]=temp;
+		return x;
 	}
 	
 	public void Rehash()
 	{
-		//A NewList=all elements from T
-		int Z=0;//Z is size of actual elements of T
 		
-		//?Use Hash again or other method for setting a1,a2,b1,b2
+		Hash();
 		
-		for(int i=0;i<Z;i++)
+		int[] tempArray = new int[Z];
+		int index = 0;
+		
+		for(int i = 0; i < m; i++)
 		{
-			//insert(A(Z));
+			if(T[i] != 0)
+			{
+				tempArray[index] = T[i];
+				index++;
+			}
+		}
+		
+		for(int j = 0; j < Z; j++)
+		{
+			Insert(tempArray[j]);
 		}
 		
 	}
@@ -113,25 +129,36 @@ public class CuckooHash {
 	public void Insert(int x)
 	{
 		int pos=0,loop=0;
+		
 		if(Lookup(x)==0)
+		{
 			return;
+		}
 		else
 		{
 			pos=h1(x);
+			
 			while(loop<4)//Arbitrary 4-replace by MaxLoop
 			{
-				//if(T[pos]=="\0")
-				//{ T[pos]=x;
-				//	return;}
-				//else
-				//swap(x,pos);
-				
-				/**
-				if(pos==h1(x))
-					pos=h2(x);
+				if( T[pos] == 0 )
+				{ 
+					T[pos]=x;
+					Z++;
+					return;
+				}
 				else
+				{
+					x = Swap(x,pos);
+				}
+				
+				if(pos==h1(x))
+				{
+					pos=h2(x);
+				}
+				else
+				{
 					pos=h1(x);
-				 */
+				}
 			}
 			Rehash();
 			Insert(x);
