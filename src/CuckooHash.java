@@ -1,6 +1,9 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 
 public class CuckooHash {
@@ -79,9 +82,9 @@ public class CuckooHash {
 	public int Lookup(int x)
 	{
 		if(T[h1(x)] == x || T[h2(x)] == x)
-			return 0;
-		else
 			return 1;
+		else
+			return 0;
 	}
 
 	public int Swap(int x, int pos)
@@ -130,7 +133,7 @@ public class CuckooHash {
 	{
 		int pos=0,loop=0;
 		
-		if(Lookup(x)==0)
+		if(Lookup(x)==1)
 		{
 			return;
 		}
@@ -159,23 +162,49 @@ public class CuckooHash {
 				{
 					pos=h1(x);
 				}
+				loop++;
 			}
 			Rehash();
 			Insert(x);
 		}
 	}
 	
-	public static void main(String[] args) 
+	public void printAll()
 	{
-		// TODO Auto-generated method stub
-		//PUT main in another class
-		//Take user input of size-N
-		//Create Object of CuckooHash "CH" say
-		//CuckooHash CH=new CuckooHash(N);
-
-		//CH.Hash();
-		//CH.Insert(); different set o values
-		
+		for(int i = 0; i < T.length; i++) 
+		{
+			if(T[i] != 0)
+			{
+				System.out.print(T[i]);
+				System.out.print("|");
+			}	
+		}
+		System.out.println();
 	}
-
+	
+	public static void main(String[] args) throws FileNotFoundException 
+	{
+		System.out.print("Enter the size of the hash table:  ");
+		Scanner input = new Scanner(System.in);
+		
+		int size = input.nextInt();
+		
+		CuckooHash CH=new CuckooHash(size);
+		CH.Hash();
+		
+		input = new Scanner(new FileReader("file.txt"));
+		
+		for(int i = 0; i < 50; i++)
+		{
+			CH.Insert(input.nextInt());
+			
+			if(i%2 == 0)
+			{
+				CH.printAll();
+			}
+		}
+		
+		
+		CH.printAll();
+	}
 }
