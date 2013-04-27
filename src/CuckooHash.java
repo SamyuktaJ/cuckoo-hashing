@@ -14,6 +14,8 @@ public class CuckooHash {
 	
 	int a1=0,a2=0,b1=0,b2=0;//all primes b/w 0 and p-1
 	
+	int RehashCount=0;
+	
 	ArrayList<BigInteger> array = new ArrayList<BigInteger>();
 	
 	Random generator = new Random(23);
@@ -25,7 +27,7 @@ public class CuckooHash {
 	public CuckooHash(int inputN)
 	{
 		n = inputN;
-		m=2*n; 	//n=nos to be hashed, m= no. of buckets
+		m=6*n; 	//n=nos to be hashed, m= no. of buckets
 				//or 4n or 6n?
 		
 		T = new int[m];
@@ -97,10 +99,12 @@ public class CuckooHash {
 	
 	public void Rehash()
 	{
+		RehashCount++;
 		System.out.println("Rehash!!");
 		Hash();
-		
-		int[] tempArray = new int[Z];
+		int ele=Z+1;
+		Z=0;
+		int[] tempArray = new int[ele];
 		int index = 0;
 		
 		for(int i = 0; i < m; i++)
@@ -108,27 +112,29 @@ public class CuckooHash {
 			if(T[i] != 0)
 			{
 				tempArray[index] = T[i];
+				T[i]=0;
 				index++;
 			}
 		}
-		
-		for(int j = 0; j < Z; j++)
+		for(int j = 0; j < ele-1; j++)
 		{
 			Insert(tempArray[j]);
 		}
 		
-		
+		return;
 		
 	}
 	
 	//Compute hash positions
 	public int h1(int x)
 	{
-		return (((a1*x)+b1)%p)%m;
+		//return (((a1*x)+b1)%p)%m;
+		return ((a1*x)+b1)%m;
 	}
 	public int h2(int x)
 	{
-		return (((a2*x)+b2)%p)%m;
+		//return (((a2*x)+b2)%p)%m;
+		return ((a2*x)+b2)%m;
 	}
 	
 	public void Insert(int x)
@@ -143,7 +149,7 @@ public class CuckooHash {
 		{
 			pos=h1(x);
 			
-			while(loop<4)//Arbitrary 4-replace by MaxLoop
+			while(loop<10)//Arbitrary 4-replace by MaxLoop
 			{
 				if( T[pos] == 0 )
 				{ 

@@ -11,6 +11,7 @@ public class HashTester {
 	public static void main(String[] args) throws FileNotFoundException 
 	{
 		long startTime, endTime, CHTime=0, SHTime=0;
+		int num;
 		System.out.print("Enter the size of the hash table:  ");
 		Scanner input = new Scanner(System.in);
 		
@@ -26,13 +27,14 @@ public class HashTester {
 		
 		for(int i = 0; i < size; i++)
 		{
+			num=input.nextInt();
 			startTime = System.currentTimeMillis();
-			CH.Insert(input.nextInt());
+			CH.Insert(num);
 			endTime = System.currentTimeMillis();
 			CHTime=CHTime+(endTime - startTime);
 			
 			startTime = System.currentTimeMillis();
-			SH.Insert(input.nextInt());
+			SH.Insert(num);
 			endTime = System.currentTimeMillis();
 			SHTime=SHTime+(endTime - startTime);
 			
@@ -46,6 +48,7 @@ public class HashTester {
 		CH.printAll();
 		SH.printAll();
 		
-		System.out.print("Time to hash"+n+"values"+"\n Cuckoo Hash:"+CHTime+"\n Standard Hash:"+SHTime);
+		System.out.println("Time to hash"+size+"values"+"\n Cuckoo Hash:"+CHTime+"\n Standard Hash:"+SHTime);
+		System.out.println("Number of Rehashes"+CH.RehashCount);
 	}
 }
