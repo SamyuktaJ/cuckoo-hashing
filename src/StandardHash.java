@@ -6,29 +6,27 @@ import java.util.Random;
 import java.util.Scanner;
 
 
-public class CuckooHash {
+public class StandardHash {
 		
 	int n=0,m=0;
 	
 	int p=0; //p= prime >m
 	
-	int a1=0,a2=0,b1=0,b2=0;//all primes b/w 0 and p-1
+	int a1=0,b1=0;//all primes b/w 0 and p-1
 	
 	ArrayList<BigInteger> array = new ArrayList<BigInteger>();
 	
 	Random generator = new Random(23);
 	
-	int[] T;
+	ArrayList<ArrayList<Integer>> T = new ArrayList<ArrayList<Integer>>();
 	int Z=0;  //Z is size of actual elements of T
 	
 	//Constructor
-	public CuckooHash(int inputN)
+	public StandardHash(int inputN)
 	{
 		n = inputN;
 		m=2*n; 	//n=nos to be hashed, m= no. of buckets
 				//or 4n or 6n?
-		
-		T = new int[m];
 		
 		BigInteger pTemp = new BigInteger(String.valueOf(m));
 		pTemp = pTemp.nextProbablePrime();
@@ -42,12 +40,17 @@ public class CuckooHash {
 			array.add(d);
 			d = d.nextProbablePrime();			
 		}
+		
+		for(int i = 0; i < m; i++)
+		{
+			T.add(new ArrayList<Integer>());
+		}
 	}
 	
 	public void Hash()
 	{
 		/**
-		 rand a1,b1,a2,b2; //all between 0 and p-1
+		 rand a1,b1; //all between 0 and p-1
 		 */
 		int length = array.size();
 		
@@ -60,80 +63,33 @@ public class CuckooHash {
 		{
 		num = generator.nextInt(length);
 		}
-		a2 = array.get(num).intValue();
-		
-		int temp2 = num;
-		
-		while(temp2 == num || temp == num)
-		{
-		num = generator.nextInt(length);
-		}
 		b1 = array.get(num).intValue();
-		
-		int temp3 = num;
-		
-		while(temp3 == num || temp2 == num || temp == num)
-		{
-		num = generator.nextInt(length);
-		}
-		b2 = array.get(num).intValue();
 	}
 	
 	public int Lookup(int x)
 	{
-		if(T[h1(x)] == x || T[h2(x)] == x)
-			return 1;
+		if(!T.isEmpty())
+		{
+			if(T.get(h1(x)).contains(x))
+				return 1;
+			else
+				return 0;
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
-	public int Swap(int x, int pos)
-	{
-		int temp=x;
-		x=T[pos];
-		T[pos]=temp;
-		return x;
-	}
-	
-	public void Rehash()
-	{
-		System.out.println("Rehash!!");
-		Hash();
-		
-		int[] tempArray = new int[Z];
-		int index = 0;
-		
-		for(int i = 0; i < m; i++)
-		{
-			if(T[i] != 0)
-			{
-				tempArray[index] = T[i];
-				index++;
-			}
-		}
-		
-		for(int j = 0; j < Z; j++)
-		{
-			Insert(tempArray[j]);
-		}
-		
-		
-		
-	}
-	
 	//Compute hash positions
 	public int h1(int x)
 	{
 		return (((a1*x)+b1)%p)%m;
 	}
-	public int h2(int x)
-	{
-		return (((a2*x)+b2)%p)%m;
-	}
-	
+		
 	public void Insert(int x)
 	{
-		int pos=0,loop=0;
+		int pos=0;
 		
 		if(Lookup(x)==1)
 		{
@@ -142,44 +98,22 @@ public class CuckooHash {
 		else
 		{
 			pos=h1(x);
-			
-			while(loop<4)//Arbitrary 4-replace by MaxLoop
-			{
-				if( T[pos] == 0 )
-				{ 
-					T[pos]=x;
-					Z++;
-					return;
-				}
-				else
-				{
-					x = Swap(x,pos);
-				}
-				
-				if(pos==h1(x))
-				{
-					pos=h2(x);
-				}
-				else
-				{
-					pos=h1(x);
-				}
-				loop++;
-			}
-			Rehash();
-			Insert(x);
+			T.get(pos).add(x); 			
 		}
 	}
 	
 	public void printAll()
 	{
-		for(int i = 0; i < T.length; i++) 
+		for( ArrayList<Integer> x : T)  
 		{
-			if(T[i] != 0)
+			for(int i = 0; i < x.size(); i++)
 			{
-				System.out.print(T[i]);
+				if(x.get(i) != 0)
+					{
+				System.out.print(x.get(i));
 				System.out.print("|");
-			}	
+					}
+			}
 		}
 		System.out.println();
 	}
@@ -191,22 +125,22 @@ public class CuckooHash {
 		
 		int size = input.nextInt();
 		
-		CuckooHash CH=new CuckooHash(size);
-		CH.Hash();
+		StandardHash SH=new StandardHash(size);
+		SH.Hash();
 		
 		input = new Scanner(new FileReader("file.txt"));
 		
 		for(int i = 0; i < size; i++)
 		{
-			CH.Insert(input.nextInt());
+			SH.Insert(input.nextInt());
 			
 		if(i%2 == 0)
 			{
-				CH.printAll();
+				SH.printAll();
 		    }
 		}
 		
 		
-		CH.printAll();
+		SH.printAll();
 	}
 }
