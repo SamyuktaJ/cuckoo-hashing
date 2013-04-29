@@ -25,7 +25,7 @@ public class StandardHash {
 	public StandardHash(int inputN)
 	{
 		n = inputN;
-		m=2*n; 	//n=nos to be hashed, m= no. of buckets
+		m=n; 	//n=nos to be hashed, m= no. of buckets
 				//or 4n or 6n?
 		
 		BigInteger pTemp = new BigInteger(String.valueOf(m));
